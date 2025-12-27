@@ -1,0 +1,42 @@
+name: Update Bitcoin Podcast Feed
+
+# Wann der Workflow ausgeführt wird
+on:
+  schedule:
+    - cron: "5 * * * *"  # jede Stunde (UTC)
+  workflow_dispatch:      # erlaubt manuelles Ausführen
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Repo auschecken
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      # Python installieren
+      - name: Python installieren
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Abhängigkeiten installieren
+      - name: Abhängigkeiten installieren
+        run: |
+          pip install -r requirements.txt
+
+      # RSS-Feed generieren
+      - name: Feed generieren
+        run: |
+          python bitcoin-podcasts.py
+
+      # Änderungen committen und pushen
+      - name: Änderungen committen
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/bitcoin_latest_episodes.xml
+          git commit -m "Automatisches Feed-Update" || echo "Keine Änderungen"
+          git push
+
