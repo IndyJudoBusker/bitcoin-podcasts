@@ -88,6 +88,8 @@ def get_latest_episode(feed_url):
     # 4. summary
     elif "summary" in entry:
         episode_description = entry.summary
+
+    duration = getattr(entry, "itunes_duration", None)
     
     print(f"   ✔ Neueste Folge: {entry.get('title', 'Unbekannter Titel')}\n")
 
@@ -101,6 +103,7 @@ def get_latest_episode(feed_url):
         "guid": entry.get("id", entry.get("link", "")),
         "episode_image": episode_image,
         "episode_description": episode_description,
+        "duration": duration,
     }
 
 
@@ -166,6 +169,9 @@ def generate_rss(episodes, output_file):
                 type="audio/mpeg",
             )
 
+        if ep.get("duration"):
+            ET.SubElement(item, f"{{{ITUNES_NS}}}duration").text = ep["duration"]
+        
         description = ep.get("episode_description", "").strip()
 
         if description:
