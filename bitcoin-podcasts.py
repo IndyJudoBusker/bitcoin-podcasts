@@ -106,7 +106,17 @@ def get_latest_episode(feed_url):
 # Schritt 4: Gemeinsamen RSS-Feed erzeugen
 # --------------------------------------------------
 def generate_rss(episodes, output_file):
-    rss = ET.Element("rss", version="2.0")
+    #rss = ET.Element("rss", version="2.0")
+    rss = ET.Element(
+        "rss",
+        version="2.0",
+        attrib={
+            "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
+            "xmlns:atom": "http://www.w3.org/2005/Atom",
+            "xmlns:media": "http://search.yahoo.com/mrss/"
+        },
+    )
+
     channel = ET.SubElement(rss, "channel")
 
     ET.SubElement(channel, "title").text = "Bitcoin – Aktuelle Podcast-Folgen"
