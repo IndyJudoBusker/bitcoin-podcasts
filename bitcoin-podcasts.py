@@ -5,6 +5,14 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from email.utils import format_datetime
 
+ITUNES_NS = "http://www.itunes.com/dtds/podcast-1.0.dtd"
+ATOM_NS = "http://www.w3.org/2005/Atom"
+MEDIA_NS = "http://search.yahoo.com/mrss/"
+
+ET.register_namespace("itunes", ITUNES_NS)
+ET.register_namespace("atom", ATOM_NS)
+ET.register_namespace("media", MEDIA_NS)
+
 SEARCH_TERM = "bitcoin"
 COUNTRY = "de"
 LIMIT = 100
@@ -106,16 +114,7 @@ def get_latest_episode(feed_url):
 # Schritt 4: Gemeinsamen RSS-Feed erzeugen
 # --------------------------------------------------
 def generate_rss(episodes, output_file):
-    #rss = ET.Element("rss", version="2.0")
-    rss = ET.Element(
-        "rss",
-        version="2.0",
-        attrib={
-            "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
-            "xmlns:atom": "http://www.w3.org/2005/Atom",
-            "xmlns:media": "http://search.yahoo.com/mrss/"
-        },
-    )
+    rss = ET.Element("rss", version="2.0")
 
     channel = ET.SubElement(rss, "channel")
 
@@ -140,7 +139,12 @@ def generate_rss(episodes, output_file):
             ET.SubElement(item, "pubDate").text = format_datetime(pub_date)
 
         if ep["episode_image"]:
-            ET.SubElement(item, "itunes:image", href=ep["episode_image"])
+            #ET.SubElement(item, "itunes:image", href=ep["episode_image"])
+            ET.SubElement(
+                item,
+                f"{{{ITUNES_NS}}}image",
+                href=ep["episode_image"]
+            )
 
         if ep["audio_url"]:
             ET.SubElement(
