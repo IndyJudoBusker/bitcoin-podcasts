@@ -78,6 +78,15 @@ def get_latest_episode(feed_url):
         print("   ⚠️ Keine Audio-Datei (enclosure) gefunden\n")
         return None
 
+    # Episodenbild (falls vorhanden)
+    episode_image = None
+    if "image" in entry:
+        episode_image = entry.image.get("href")
+    elif "itunes_image" in entry:
+        episode_image = entry.itunes_image.get("href")
+    elif "itunes_image" in feed.feed:  # fallback auf Podcast-Bild
+        episode_image = feed.feed.itunes_image.get("href")
+
     print(f"   ✔ Neueste Folge: {entry.get('title', 'Unbekannter Titel')}\n")
 
     return {
@@ -88,6 +97,7 @@ def get_latest_episode(feed_url):
         "audio_url": enclosure_url,
         "audio_length": enclosure_length,
         "guid": entry.get("id", entry.get("link", "")),
+        "episode_image": episode_image
     }
 
 
@@ -118,6 +128,9 @@ def generate_rss(episodes, output_file):
         if ep["published"]:
             pub_date = datetime(*ep["published"][:6])
             ET.SubElement(item, "pubDate").text = format_datetime(pub_date)
+
+        if ep["episode_image"]:
+            ET.SubElement(item, "itunes:image", href=ep["episode_image"])
 
         if ep["audio_url"]:
             ET.SubElement(
