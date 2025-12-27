@@ -125,6 +125,8 @@ def generate_rss(episodes, output_file):
     )
     ET.SubElement(channel, "lastBuildDate").text = format_datetime(datetime.utcnow())
 
+    ET.SubElement(channel,f"{{{ITUNES_NS}}}image",href="https://indyjudobusker.github.io/bitcoin-podcasts/btc-feeda-aggr.png")
+
     for ep in episodes:
         item = ET.SubElement(channel, "item")
 
@@ -143,7 +145,21 @@ def generate_rss(episodes, output_file):
             ET.SubElement(
                 item,
                 f"{{{ITUNES_NS}}}image",
-                href=ep["episode_image"]
+                href=ep["episode_image"],
+            )
+
+            ET.SubElement(
+                item,
+                f"{{{MEDIA_NS}}}thumbnail",
+                url=ep["episode_image"],
+            )
+
+            ET.SubElement(
+                item,
+                f"{{{MEDIA_NS}}}content",
+                url=ep["episode_image"],
+                medium="image",
+                type="image/jpeg",
             )
 
         if ep["audio_url"]:
