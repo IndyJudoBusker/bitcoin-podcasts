@@ -97,7 +97,7 @@ def get_latest_episode(feed_url):
         "audio_url": enclosure_url,
         "audio_length": enclosure_length,
         "guid": entry.get("id", entry.get("link", "")),
-        "episode_image": episode_image
+        "episode_image": episode_image,
     }
 
 
