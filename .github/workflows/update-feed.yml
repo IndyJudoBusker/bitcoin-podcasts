@@ -1,5 +1,8 @@
 name: Update Bitcoin Podcast Feed
 
+permissions:
+  contents: write
+
 # Wann der Workflow ausgeführt wird
 on:
   schedule:
