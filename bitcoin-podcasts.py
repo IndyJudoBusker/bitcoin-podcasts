@@ -13,6 +13,9 @@ ET.register_namespace("itunes", ITUNES_NS)
 ET.register_namespace("atom", ATOM_NS)
 ET.register_namespace("media", MEDIA_NS)
 
+def cdata(text):
+    return f"<![CDATA[{text}]]>"
+
 SEARCH_TERM = "bitcoin"
 COUNTRY = "de"
 LIMIT = 100
@@ -39,29 +42,6 @@ def search_podcasts(term, country="de", limit=100):
 # --------------------------------------------------
 # Schritt 2 & 3: Neueste Folge aus jedem RSS-Feed holen
 # --------------------------------------------------
-#def get_latest_episode(feed_url):
-#    feed = feedparser.parse(feed_url)
-#
-#    if not feed.entries:
-#        return None
-#
-#    entry = feed.entries[0]  # neueste Episode
-#
-#    enclosure_url = None
-#    enclosure_length = None
-#    if "enclosures" in entry and entry.enclosures:
-#        enclosure_url = entry.enclosures[0].get("href")
-#        enclosure_length = entry.enclosures[0].get("length", "0")
-#
-#    return {
-#        "podcast_title": feed.feed.get("title", "Unbekannter Podcast"),
-#        "episode_title": entry.get("title", "Unbekannte Folge"),
-#        "link": entry.get("link", ""),
-#        "published": entry.get("published_parsed"),
-#        "audio_url": enclosure_url,
-#        "audio_length": enclosure_length,
-#        "guid": entry.get("id", entry.get("link", "")),
-#    }
 def get_latest_episode(feed_url):
     print(f"➡️  Lade Feed: {feed_url}")
 
@@ -95,6 +75,20 @@ def get_latest_episode(feed_url):
     elif "itunes_image" in feed.feed:  # fallback auf Podcast-Bild
         episode_image = feed.feed.itunes_image.get("href")
 
+    # Beschreibung
+    # content:encoded (meist am ausführlichsten)
+    if "content" in entry and entry.content:
+        episode_description = entry.content[0].value
+    # itunes:summary
+    elif "itunes_summary" in entry:
+       episode_description = entry.itunes_summary
+    # 3. description
+    elif "description" in entry:
+        episode_description = entry.description
+    # 4. summary
+    elif "summary" in entry:
+        episode_description = entry.summary
+    
     print(f"   ✔ Neueste Folge: {entry.get('title', 'Unbekannter Titel')}\n")
 
     return {
@@ -106,6 +100,7 @@ def get_latest_episode(feed_url):
         "audio_length": enclosure_length,
         "guid": entry.get("id", entry.get("link", "")),
         "episode_image": episode_image,
+        "episode_description": episode_description,
     }
 
 
@@ -170,6 +165,19 @@ def generate_rss(episodes, output_file):
                 length=str(ep["audio_length"]),
                 type="audio/mpeg",
             )
+
+        description = ep.get("episode_description", "").strip()
+
+        if description:
+            # Standard RSS
+            ET.SubElement(item, "description").text = cdata(description)
+
+            # Apple Podcasts
+            ET.SubElement(
+                item,
+                f"{{{ITUNES_NS}}}summary"
+            ).text = cdata(description)
+
 
     tree = ET.ElementTree(rss)
     tree.write(output_file, encoding="utf-8", xml_declaration=True)
