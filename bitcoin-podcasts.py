@@ -20,7 +20,6 @@ SEARCH_TERM = "bitcoin"
 COUNTRY = "de"
 LIMIT = 100
 OUTPUT_FILE = "docs/bitcoin_latest_episodes.xml"
-#OUTPUT_FILE = "bitcoin_latest_episodes.xml"
 
 # --------------------------------------------------
 # Schritt 1: Apple Podcasts durchsuchen
