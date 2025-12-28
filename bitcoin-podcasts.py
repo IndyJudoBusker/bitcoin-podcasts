@@ -116,7 +116,7 @@ def generate_rss(episodes, output_file):
     channel = ET.SubElement(rss, "channel")
 
     ET.SubElement(channel, "title").text = "Bitcoin – Aktuelle Podcast-Folgen"
-    ET.SubElement(channel, "link").text = "https://example.com/bitcoin-podcast-feed"
+    ET.SubElement(channel, "link").text = "https://indyjudobusker.github.io/bitcoin-podcasts/bitcoin_latest_episodes.xml"
     ET.SubElement(channel, "description").text = (
         "Die jeweils neueste Folge aller Apple-Podcasts zum Thema Bitcoin"
     )
