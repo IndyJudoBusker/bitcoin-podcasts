@@ -90,7 +90,7 @@ def get_latest_episode(feed_url):
 
     duration = getattr(entry, "itunes_duration", None)
     
-    print(f"   ✔ Neueste Folge: {entry.get('title', 'Unbekannter Titel')}\n")
+    print(f"   ✔ Neueste Folge: {entry.get('title', 'Unbekannte Folge')}\n")
 
     return {
         "podcast_title": podcast_title,
@@ -126,6 +126,11 @@ def generate_rss(episodes, output_file):
 
     for ep in episodes:
         item = ET.SubElement(channel, "item")
+
+        print("generate_rss Variable podcast_title\n")
+        print(repr(ep['podcast_title']))
+        print(" generate_rss Variable episode_title\n")
+        print(repr(ep['episode_title']))
 
         ET.SubElement(
             item, "title"
