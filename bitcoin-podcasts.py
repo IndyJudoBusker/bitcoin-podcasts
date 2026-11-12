@@ -272,7 +272,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("docs/bitcoin_latest_episodes.xml"))
     parser.add_argument("--self-link", default="https://indyjudobusker.github.io/bitcoin-podcasts/bitcoin_latest_episodes.xml")
     parser.add_argument("--feed-image", default="https://indyjudobusker.github.io/bitcoin-podcasts/btc-feeda-aggr.png")
-    parser.add_argument("--workers", type=int, default=5, help="Parallele Downloads")
+    parser.add_argument("--workers", type=int, default=10, help="Parallele Downloads")
     parser.add_argument("-v", "--verbose", action="store_true", help="Mehr Details")
     args = parser.parse_args()
 
