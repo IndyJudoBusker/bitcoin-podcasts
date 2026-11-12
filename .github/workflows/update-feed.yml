@@ -16,7 +16,7 @@ jobs:
     steps:
       # Repo auschecken
       - name: Repository auschecken
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Python installieren
       - name: Python installieren
