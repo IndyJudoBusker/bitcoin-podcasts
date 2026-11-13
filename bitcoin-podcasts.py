@@ -206,7 +206,7 @@ def generate_rss(
         "published": now.timetuple(),
         "published_dt": now,
         "audio_url": "https://rewerb.com/downloads/test.mp3",
-        "audio_length": "0",
+        "audio_length": "552233",
         "audio_type": "audio/mpeg",
         "guid": f"last-run-{now.isoformat()}",
         "episode_image": feed_image,
