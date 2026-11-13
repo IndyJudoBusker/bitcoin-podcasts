@@ -6,8 +6,12 @@ permissions:
 # Wann der Workflow ausgeführt wird
 on:
   schedule:
-    - cron: "5 * * * *"  # jede Stunde (UTC)
+    - cron: "17 * * * *"  # jede Stunde (UTC)
   workflow_dispatch:      # erlaubt manuelles Ausführen
+
+concurrency:
+  group: update-feed
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,6 +27,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: pip
 
       # Abhängigkeiten installieren
       - name: Abhängigkeiten installieren
@@ -40,6 +45,12 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add docs/bitcoin_latest_episodes.xml
-          git commit -m "Automatisches Feed-Update" || echo "Keine Änderungen"
-          git push
+          # git commit -m "Automatisches Feed-Update" || echo "Keine Änderungen"
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen"
+          else
+            git commit -m "Automatisches Feed-Update"
+            git pull --rebase
+            git push
+          fi
 
