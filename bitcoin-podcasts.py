@@ -205,7 +205,7 @@ def generate_rss(
         "link": self_link,
         "published": now.timetuple(),
         "published_dt": now,
-        "audio_url": None,
+        "audio_url": "https://rewerb.com/downloads/test.mp3",
         "audio_length": "0",
         "audio_type": "audio/mpeg",
         "guid": f"last-run-{now.isoformat()}",
@@ -213,7 +213,7 @@ def generate_rss(
         "episode_description": (
             f"Dieser aggregierte Feed wurde zuletzt am {now_str} Uhr aktualisiert."
         ),
-        "duration": None,
+        "duration": "00:03:50",
     }
 
     # Dummy an den Anfang der Liste setzen
