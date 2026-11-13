@@ -187,11 +187,37 @@ def generate_rss(
     self_link: str,
     feed_image: str,
 ) -> None:
+    # Absteigend sortieren: neueste Episode zuerst
     episodes = sorted(
         episodes,
         key=lambda ep: ep.get("published_dt") or datetime.min.replace(tzinfo=timezone.utc),
         reverse=True,
     )
+
+    # Aktuellen Zeitstempel für den Dummy-Eintrag und lastBuildDate
+    now = datetime.now(timezone.utc)
+    now_str = now.strftime("%d.%m.%Y, %H:%M")
+
+    # Dummy-Eintrag als erstes Item („Letzter Lauf“)
+    dummy = {
+        "podcast_title": f"Letzter Lauf: {now_str}",
+        "episode_title": "",
+        "link": self_link,
+        "published": now.timetuple(),
+        "published_dt": now,
+        "audio_url": None,
+        "audio_length": "0",
+        "audio_type": "audio/mpeg",
+        "guid": f"last-run-{now.isoformat()}",
+        "episode_image": feed_image,
+        "episode_description": (
+            f"Dieser aggregierte Feed wurde zuletzt am {now_str} Uhr aktualisiert."
+        ),
+        "duration": None,
+    }
+
+    # Dummy an den Anfang der Liste setzen
+    episodes.insert(0, dummy)
 
     rss = ET.Element("rss", version="2.0")
     channel = ET.SubElement(rss, "channel")
@@ -201,9 +227,7 @@ def generate_rss(
     ET.SubElement(channel, "description").text = (
         "Die jeweils neueste Folge aller Apple-Podcasts zum Thema Bitcoin"
     )
-    ET.SubElement(channel, "lastBuildDate").text = format_datetime(
-        datetime.now(timezone.utc)
-    )
+    ET.SubElement(channel, "lastBuildDate").text = format_datetime(now)
 
     ET.SubElement(
         channel, f"{{{ATOM_NS}}}link", rel="self", href=self_link, type="application/rss+xml"
@@ -213,9 +237,14 @@ def generate_rss(
     for ep in episodes:
         item = ET.SubElement(channel, "item")
 
-        ET.SubElement(item, "title").text = (
-            f"{ep['podcast_title']} – {ep['episode_title']}"
-        )
+        # Titel: ohne „ – “, wenn keine Episoden-Info vorhanden (Dummy)
+        if ep.get("episode_title"):
+            ET.SubElement(item, "title").text = (
+                f"{ep['podcast_title']} – {ep['episode_title']}"
+            )
+        else:
+            ET.SubElement(item, "title").text = ep["podcast_title"]
+
         ET.SubElement(item, "link").text = ep["link"]
         ET.SubElement(item, "guid").text = ep["guid"]
 
