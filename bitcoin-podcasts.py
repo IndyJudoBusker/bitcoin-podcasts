@@ -7,6 +7,7 @@ import argparse
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from email.utils import format_datetime
 from pathlib import Path
 
@@ -197,10 +198,14 @@ def generate_rss(
     # Aktuellen Zeitstempel für den Dummy-Eintrag und lastBuildDate
     now = datetime.now(timezone.utc)
     now_str = now.strftime("%d.%m.%Y, %H:%M")
+    
+    now_utc = datetime.now(timezone.utc)
+    now_mesz = now_utc.astimezone(ZoneInfo("Europe/Berlin"))
+    now_mesz_str = now_mesz.strftime("%d.%m.%Y, %H:%M")
 
     # Dummy-Eintrag als erstes Item („Letzter Lauf“)
     dummy = {
-        "podcast_title": f"Letzter Lauf: {now_str}",
+        "podcast_title": f"Letzter Lauf: {now_mesz_str}",
         "episode_title": "",
         "link": self_link,
         "published": now.timetuple(),
@@ -211,9 +216,9 @@ def generate_rss(
         "guid": f"last-run-{now.isoformat()}",
         "episode_image": feed_image,
         "episode_description": (
-            f"Dieser aggregierte Feed wurde zuletzt am {now_str} Uhr aktualisiert."
+            f"Dieser aggregierte Feed wurde zuletzt am {now_mesz_str} Uhr aktualisiert."
         ),
-        "duration": "00:03:50",
+        "duration": "00:03:30",
     }
 
     # Dummy an den Anfang der Liste setzen
